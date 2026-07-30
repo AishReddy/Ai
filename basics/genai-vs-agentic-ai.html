@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenAI vs Agentic AI vs AI Agents</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a24;
+    --surface2: #1e2435;
+    --border: #2a3045;
+    --text: #e8eaf2;
+    --muted: #7a85a0;
+    --accent-gen: #a78bfa;
+    --accent-agent: #38bdf8;
+    --accent-warn: #f97316;
+    --accent-green: #4ade80;
+    --glow-gen: rgba(167,139,250,0.15);
+    --glow-agent: rgba(56,189,248,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0d0f14 0%, #111827 50%, #0d0f14 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 72px 40px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(167,139,250,0.12), transparent);
+  }
+  .hero-eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-gen);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.15;
+    position: relative;
+  }
+  .hero h1 .vs {
+    color: var(--muted);
+    font-weight: 300;
+    font-size: 0.65em;
+    vertical-align: middle;
+    margin: 0 8px;
+  }
+  .hero h1 .genai { color: var(--accent-gen); }
+  .hero h1 .agentic { color: var(--accent-agent); }
+  .hero-sub {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  p { color: #b0b8cc; margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── WHAT IS AI ── */
+  .ai-def {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-top: 24px;
+  }
+  .ai-def blockquote {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    border-left: 3px solid var(--accent-gen);
+    padding-left: 20px;
+    line-height: 1.5;
+  }
+
+  /* ── GENAI OUTPUTS ── */
+  .output-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .output-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 100px;
+    justify-content: center;
+  }
+  .output-chip .icon { font-size: 20px; }
+
+  /* ── LLM SECTION ── */
+  .llm-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-top: 24px;
+  }
+  .llm-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .llm-center {
+    background: linear-gradient(135deg, var(--accent-gen), var(--accent-agent));
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+  }
+  .llm-arrow {
+    color: var(--muted);
+    font-size: 20px;
+  }
+  .llm-side {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .llm-models {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .model-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ── KNOWLEDGE CUTOFF TABLE ── */
+  .cutoff-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-size: 13px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .cutoff-table thead {
+    background: var(--surface2);
+  }
+  .cutoff-table th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--accent-agent);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .cutoff-table td {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    color: #b0b8cc;
+  }
+  .cutoff-table tr:hover td { background: var(--surface); }
+  .cutoff-table .highlight td { color: var(--accent-warn); font-weight: 500; }
+
+  /* ── GENAI TRAITS ── */
+  .traits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .trait-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .trait-card .trait-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .trait-card .trait-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--accent-gen);
+  }
+  .trait-card .trait-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── AUTONOMY METER ── */
+  .autonomy-row {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .autonomy-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .meter-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #4ade80, #facc15, #f97316, #ef4444);
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .meter-pointer {
+    position: absolute;
+    top: -5px;
+    height: 20px;
+    width: 3px;
+    background: #fff;
+    border-radius: 2px;
+    transition: left 0.5s ease;
+  }
+  .meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── COMPARISON CARDS ── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 24px;
+  }
+  @media(max-width:600px) { .compare-grid { grid-template-columns: 1fr; } }
+
+  .compare-card {
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid var(--border);
+  }
+  .compare-card.gen {
+    background: radial-gradient(ellipse at top left, var(--glow-gen), var(--surface));
+    border-color: rgba(167,139,250,0.3);
+  }
+  .compare-card.agent {
+    background: radial-gradient(ellipse at top right, var(--glow-agent), var(--surface));
+    border-color: rgba(56,189,248,0.3);
+  }
+  .compare-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .compare-card.gen h3 { color: var(--accent-gen); }
+  .compare-card.agent h3 { color: var(--accent-agent); }
+  .compare-card .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .compare-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .compare-card ul li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #b0b8cc;
+  }
+  .compare-card.gen ul li .dot { color: var(--accent-gen); margin-top: 4px; }
+  .compare-card.agent ul li .dot { color: var(--accent-agent); margin-top: 4px; }
+  .compare-card ul li .strike { text-decoration: line-through; color: var(--muted); }
+  .compare-card ul li .check { color: var(--accent-green); }
+
+  /* ── INSIGHT CALLOUT ── */
+  .insight {
+    margin-top: 32px;
+    background: var(--surface2);
+    border-left: 3px solid var(--accent-warn);
+    border-radius: 0 12px 12px 0;
+    padding: 18px 22px;
+  }
+  .insight .insight-head {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-warn);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .insight p { color: #b0b8cc; font-size: 14px; margin: 0; }
+
+  /* ── SUMMARY TABLE ── */
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-size: 13px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .summary-table thead {
+    background: var(--surface2);
+  }
+  .summary-table th {
+    padding: 14px 18px;
+    text-align: left;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .summary-table th:nth-child(2) { color: var(--accent-gen); }
+  .summary-table th:nth-child(3) { color: var(--accent-agent); }
+  .summary-table td {
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    color: #b0b8cc;
+    vertical-align: top;
+  }
+  .summary-table td:first-child { color: var(--muted); font-size: 12px; font-weight: 500; }
+  .summary-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .yes { color: var(--accent-green); font-weight: 600; }
+  .no  { color: #ef4444; font-weight: 600; }
+  .partial { color: var(--accent-warn); font-weight: 600; }
+
+  /* ── TIMELINE (AI Agent 3 pillars) ── */
+  .timeline {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 36px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 18px;
+    bottom: 18px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent-agent), rgba(56,189,248,0.2));
+  }
+  .tl-item {
+    position: relative;
+    padding: 18px 0 18px 24px;
+  }
+  .tl-dot {
+    position: absolute;
+    left: -26px;
+    top: 22px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent-agent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--accent-agent);
+  }
+  .tl-item h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent-agent);
+    margin-bottom: 4px;
+  }
+  .tl-item p { font-size: 13px; color: #b0b8cc; margin: 0; }
+
+  /* ── TASK vs GOAL split ── */
+  .split-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 28px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  @media(max-width:600px) { .split-compare { grid-template-columns: 1fr; } }
+  .split-pane {
+    padding: 28px 24px;
+  }
+  .split-pane.left { background: var(--surface); }
+  .split-pane.right { background: var(--surface2); }
+  .split-pane .split-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .split-pane.left .split-tag { background: rgba(167,139,250,0.15); color: var(--accent-gen); }
+  .split-pane.right .split-tag { background: rgba(56,189,248,0.15); color: var(--accent-agent); }
+  .split-pane h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .split-pane.left h3 { color: var(--accent-gen); }
+  .split-pane.right h3 { color: var(--accent-agent); }
+  .split-pane p { font-size: 13px; color: #b0b8cc; margin-bottom: 14px; }
+  .task-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .task-chip {
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--accent-agent);
+    font-weight: 500;
+  }
+
+  /* ── MULTI-AGENT DIAGRAM ── */
+  .multi-agent-box {
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .agent-hub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    position: relative;
+  }
+  .agent-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+  .agent-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border: 2px solid var(--border);
+    background: var(--surface2);
+  }
+  .agent-node .agent-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .agent-node .agent-desc {
+    font-size: 11px;
+    color: var(--muted);
+    max-width: 90px;
+  }
+  .hub-center {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e2d40, #1a2535);
+    border: 2px solid var(--accent-agent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-agent);
+    text-align: center;
+    box-shadow: 0 0 20px rgba(56,189,248,0.15);
+  }
+
+  /* ── FRAMEWORKS GRID ── */
+  .frameworks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .framework-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .framework-card:hover { border-color: var(--accent-agent); }
+  .framework-card .fw-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  .framework-card .fw-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .framework-card .fw-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── BUILD TOOLS SECTION ── */
+  .build-tools {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .build-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 36px 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Concepts Explained</p>
+  <h1>
+    <span class="genai">Generative AI</span>
+    <span class="vs">vs</span>
+    <span class="agentic">Agentic AI</span>
+    <span class="vs">vs</span>
+    AI Agents
+  </h1>
+  <p class="hero-sub">A structured breakdown of three terms that often get conflated — what they really mean, how they differ, and why it matters.</p>
+</div>
+
+<div class="container">
+
+  <!-- SECTION 1: What is AI -->
+  <section>
+    <p class="section-label">Foundation</p>
+    <h2>What is Artificial Intelligence?</h2>
+    <p>Before diving into the distinctions, it helps to anchor on the broadest definition. AI is the umbrella — every system discussed here lives under it.</p>
+    <div class="ai-def">
+      <blockquote>AI is when machines perform tasks that typically require human intelligence.</blockquote>
+    </div>
+    <p style="margin-top:18px;">This includes pattern recognition, reasoning, language understanding, decision-making, and creativity. The three terms — Generative AI, Agentic AI, and AI Agents — all describe different <em>flavors</em> of that broader capability.</p>
+  </section>
+
+  <!-- SECTION 2: Generative AI -->
+  <section>
+    <p class="section-label">Layer 1</p>
+    <h2>Generative AI (GenAI)</h2>
+    <p>Generative AI is a subset of AI that can <strong>produce new content</strong>. Unlike older AI that only classified or predicted, GenAI creates. It takes a prompt as input and generates an output — the job ends once the content is delivered.</p>
+
+    <div class="output-grid">
+      <div class="output-chip"><span class="icon">📝</span> Text</div>
+      <div class="output-chip"><span class="icon">🖼️</span> Images</div>
+      <div class="output-chip"><span class="icon">🎵</span> Audios</div>
+      <div class="output-chip"><span class="icon">🎬</span> Videos</div>
+      <div class="output-chip"><span class="icon">💻</span> Code</div>
+    </div>
+
+    <div class="llm-box" style="margin-top:28px;">
+      <p class="section-label" style="margin-bottom:14px;">The Engine Behind GenAI</p>
+      <div class="llm-row">
+        <span class="llm-side">Machine Learning Models</span>
+        <span class="llm-arrow">──</span>
+        <span class="llm-center">LLMs</span>
+        <span class="llm-arrow">──</span>
+        <span class="llm-side">Deep Learning Models</span>
+      </div>
+      <p style="font-size:13px; margin-bottom:0;">Large Language Models (LLMs) are the core technology that powers most GenAI. They process tokens using <strong>Attention</strong> and <strong>Feedforward</strong> layers stacked into transformer networks. They sit at the intersection of ML and deep learning — trained on vast datasets to predict and generate text.</p>
+      <div class="llm-models">
+        <span class="model-badge">ChatGPT (OpenAI)</span>
+        <span class="model-badge">Claude (Anthropic)</span>
+        <span class="model-badge">Gemini (Google)</span>
+        <span class="model-badge">Ollama (local)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: Knowledge Cutoff -->
+  <section>
+    <p class="section-label">LLM Limitation</p>
+    <h2>The Knowledge Cutoff Problem</h2>
+    <p>LLMs are trained on data up to a specific date — after that, they have no awareness of new events. This is called the <strong>knowledge cutoff date</strong> and is a fundamental limitation of purely generative models.</p>
+    <p>Here's a look at how ChatGPT versions compare:</p>
+
+    <table class="cutoff-table">
+      <thead>
+        <tr>
+          <th>ChatGPT Version</th>
+          <th>Knowledge Cutoff</th>
+          <th>Release Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>GPT-3.5 Turbo</td><td>01 Sep 2021</td><td>30 Nov 2022</td></tr>
+        <tr><td>GPT-4 Turbo</td><td>01 Dec 2023</td><td>09 Apr 2024</td></tr>
+        <tr><td>GPT-4o</td><td>01 Jun 2024</td><td>13 May 2024</td></tr>
+        <tr><td>GPT-4.1</td><td>01 Jun 2024</td><td>15 Apr 2025</td></tr>
+        <tr class="highlight"><td>GPT-5</td><td>30 Sep 2024</td><td>07 Aug 2025</td></tr>
+        <tr class="highlight"><td>GPT-5.1</td><td>30 Sep 2024</td><td>12 Nov 2025</td></tr>
+      </tbody>
+    </table>
+
+    <div class="insight">
+      <p class="insight-head">Why this matters</p>
+      <p>A GenAI model with a knowledge cutoff can't answer "what's the stock price today" or "who won last night's match." To overcome this, models need access to external <strong>tools</strong> — which is where Agentic AI enters the picture.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 4: GenAI Traits -->
+  <section>
+    <p class="section-label">Characteristics</p>
+    <h2>Properties of Generative AI</h2>
+    <p>Based on the video's framework, GenAI has four defining properties that distinguish it from more autonomous systems:</p>
+
+    <div class="traits-grid">
+      <div class="trait-card">
+        <p class="trait-label">Behavior</p>
+        <p class="trait-val">Reactive</p>
+        <p class="trait-note">Responds to prompts. Doesn't act on its own initiative.</p>
+      </div>
+      <div class="trait-card">
+        <p class="trait-label">Independence</p>
+        <p class="trait-val">Low Autonomy</p>
+        <p class="trait-note">Makes no independent decisions. Entirely steered by user input.</p>
+      </div>
+      <div class="trait-card">
+        <p class="trait-label">Tools</p>
+        <p class="trait-val">Needs Access</p>
+        <p class="trait-note">Can use tools (search, APIs) when connected — but doesn't by default.</p>
+      </div>
+      <div class="trait-card">
+        <p class="trait-label">Actions</p>
+        <p class="trait-val">Can't Execute</p>
+        <p class="trait-note">Can suggest steps but cannot actually buy, send, or trigger anything.</p>
+      </div>
+    </div>
+
+    <div class="autonomy-row" style="margin-top:24px;">
+      <p class="autonomy-label">Independence Decision-Making Scale</p>
+      <div class="meter-bar">
+        <div class="meter-pointer" style="left: 18%;"></div>
+      </div>
+      <div class="meter-labels">
+        <span>None (Pure GenAI)</span>
+        <span>Full Autonomy (Agent)</span>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:20px;">
+      <p class="insight-head">Real example from the video</p>
+      <p>Ask ChatGPT: <em>"As soon as gold falls below ₹10,000/gram, buy 10 grams and email me."</em> — ChatGPT refuses, explaining it can't monitor prices, make purchases, or send emails on a trigger. That's GenAI's hard ceiling.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 5: Agentic AI -->
+  <section>
+    <p class="section-label">Layer 2</p>
+    <h2>Agentic AI &amp; AI Agents</h2>
+    <p>Agentic AI — or AI Agents — goes beyond generating responses. It can <strong>plan, decide, and act</strong> in the world. The "agentic" quality refers to agency: the capacity to initiate actions, use tools, and work toward goals over multiple steps without constant human input.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card gen">
+        <h3>GenAI</h3>
+        <p class="subtitle">Generative AI — responds to prompts</p>
+        <ul>
+          <li><span class="dot">■</span> <span class="strike">Proactive</span> — only reactive</li>
+          <li><span class="dot">■</span> <span class="strike">High autonomy</span> — human drives</li>
+          <li><span class="dot">■</span> Needs tool access (optional)</li>
+          <li><span class="dot">■</span> <span class="strike">Can execute actions</span></li>
+          <li><span class="dot">■</span> Job ends after one output</li>
+        </ul>
+      </div>
+      <div class="compare-card agent">
+        <h3>Agentic AI</h3>
+        <p class="subtitle">AI Agents — plans and acts autonomously</p>
+        <ul>
+          <li><span class="dot">■</span> <span class="check">✓</span> Proactive — works toward goals</li>
+          <li><span class="dot">■</span> <span class="check">✓</span> Higher levels of autonomy</li>
+          <li><span class="dot">■</span> <span class="check">✓</span> Access to internal &amp; external tools</li>
+          <li><span class="dot">■</span> <span class="check">✓</span> Can perform real-world actions</li>
+          <li><span class="dot">■</span> Continues across multiple steps</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="llm-box" style="margin-top:28px;">
+      <p class="section-label" style="margin-bottom:14px;">What tools can an AI Agent use?</p>
+      <p style="font-size:13px; margin-bottom:14px;">Agents access both internal knowledge and external systems. The video highlights two common tool types as examples:</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <span class="model-badge" style="background:rgba(56,189,248,0.1); border-color:rgba(56,189,248,0.3); color:var(--accent-agent);">🔍 Search Engine</span>
+        <span class="model-badge" style="background:rgba(56,189,248,0.1); border-color:rgba(56,189,248,0.3); color:var(--accent-agent);">📈 Finance API</span>
+        <span class="model-badge">📧 Email / Calendar</span>
+        <span class="model-badge">🗃️ Databases</span>
+        <span class="model-badge">💻 Code Execution</span>
+        <span class="model-badge">🌐 Web Browsing</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: Full Summary -->
+  <section>
+    <p class="section-label">At a Glance</p>
+    <h2>Side-by-Side Comparison</h2>
+    <p>Here's the complete picture — where each concept sits across the key dimensions the video covers:</p>
+
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Generative AI</th>
+          <th>Agentic AI / Agents</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Core capability</td>
+          <td>Generate content from a prompt</td>
+          <td>Plan, decide, act toward a goal</td>
+        </tr>
+        <tr>
+          <td>Behavior mode</td>
+          <td><span class="partial">Reactive</span></td>
+          <td><span class="yes">Proactive</span></td>
+        </tr>
+        <tr>
+          <td>Autonomy level</td>
+          <td><span class="no">Low</span></td>
+          <td><span class="yes">High</span></td>
+        </tr>
+        <tr>
+          <td>Tool access</td>
+          <td><span class="partial">Optional / limited</span></td>
+          <td><span class="yes">Built-in (internal + external)</span></td>
+        </tr>
+        <tr>
+          <td>Can execute actions</td>
+          <td><span class="no">No</span></td>
+          <td><span class="yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td>Multi-step reasoning</td>
+          <td><span class="no">No</span></td>
+          <td><span class="yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td>Knowledge cutoff</td>
+          <td><span class="no">Hard limit (training date)</span></td>
+          <td><span class="yes">Can overcome via web tools</span></td>
+        </tr>
+        <tr>
+          <td>Job lifecycle</td>
+          <td>Ends after one output</td>
+          <td>Continues until goal is met</td>
+        </tr>
+        <tr>
+          <td>Examples</td>
+          <td>ChatGPT, Claude, Gemini, Ollama</td>
+          <td>AutoGPT, Claude with tools, Copilot agents</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="insight">
+      <p class="insight-head">The key insight</p>
+      <p>GenAI and Agentic AI aren't in opposition — agents are typically built <em>on top of</em> LLMs. The difference is the layer of autonomy, tools, and action-execution added around the model. Think of GenAI as the brain, and Agentic AI as the brain with hands, eyes, and a to-do list.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 7: AI Agents Deep Dive -->
+  <section>
+    <p class="section-label">Deep Dive</p>
+    <h2>AI Agents — Three Core Pillars</h2>
+    <p>An AI Agent isn't just "smarter GenAI." It has three structural properties that define what makes something an agent. The video uses a real-world example: an Amazon-like shopping agent that can act end-to-end.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <h4>1 · Can Perform Actions</h4>
+        <p>An agent doesn't just suggest — it acts. It can browse products, add items to a cart, place orders, and trigger downstream workflows. The action is real, not hypothetical.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <h4>2 · Can Access Tools</h4>
+        <p>Agents are wired into systems — for example, a shipping or delivery API. This allows them to check stock, get real-time prices, confirm availability, and track orders without a human doing it manually.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <h4>3 · Has Some Autonomy</h4>
+        <p>Agents don't need step-by-step hand-holding. Given a goal, they figure out the path. They may still loop in a human for high-stakes decisions, but for routine execution, they run independently.</p>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:28px;">
+      <p class="insight-head">Platforms for building AI Agents</p>
+      <p>The video highlights <strong>n8n</strong> (a workflow automation tool) and <strong>OpenAI Codex</strong> as platforms used to build and deploy AI Agents — tools that let developers wire LLMs to external APIs, triggers, and actions, turning GenAI into Agentic AI.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 8: AI Agents vs Agentic AI -->
+  <section>
+    <p class="section-label">The Fine Distinction</p>
+    <h2>AI Agents vs Agentic AI — Not the Same</h2>
+    <p>The video draws a subtle but important line between these two terms. They're related but not interchangeable:</p>
+
+    <div class="split-compare">
+      <div class="split-pane left">
+        <span class="split-tag">AI Agents</span>
+        <h3>Task-focused</h3>
+        <p>An AI Agent is a specific, scoped system built to accomplish a defined set of tasks. It has a clear job description — think of it as a specialist. One agent, one domain.</p>
+        <p>Example: An agent that monitors gold prices and places a buy order when they drop below a threshold.</p>
+      </div>
+      <div class="split-pane right">
+        <span class="split-tag">Agentic AI</span>
+        <h3>Goal-focused</h3>
+        <p>Agentic AI describes a broader system design oriented around achieving an overarching goal by coordinating multiple tasks and agents. It's the architecture, not just one agent.</p>
+        <div class="task-chips">
+          <span class="task-chip">Task 1</span>
+          <span class="task-chip">Task 2</span>
+          <span class="task-chip">Task 3</span>
+        </div>
+        <p style="margin-top:10px;">Multiple agents, each handling sub-tasks, working in coordination toward the higher goal.</p>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:20px;">
+      <p class="insight-head">The analogy</p>
+      <p>AI Agents are like individual employees with job titles. Agentic AI is like the company they work for — structured, goal-driven, and made up of many agents working in concert.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 9: Multi-Agent Architecture -->
+  <section>
+    <p class="section-label">Architecture Example</p>
+    <h2>Multi-Agent System: The Gold Example</h2>
+    <p>The video revisits the gold-buying scenario with a full Agentic AI architecture. Instead of one chatbot refusing the request, multiple specialist agents collaborate:</p>
+
+    <div class="multi-agent-box">
+      <p style="font-size:13px; color:var(--muted); margin-bottom:0;">Goal: <em>Monitor gold prices, advise on limits, and execute the purchase automatically.</em></p>
+      <div class="agent-hub">
+        <div class="agent-node">
+          <div class="agent-icon">📈</div>
+          <p class="agent-name">Monitoring Agent</p>
+          <p class="agent-desc">Watches real-time gold price (10g 24k)</p>
+        </div>
+        <div class="hub-center">Agentic<br>AI<br>Core</div>
+        <div class="agent-node">
+          <div class="agent-icon">💼</div>
+          <p class="agent-name">Financial Advisor Agent</p>
+          <p class="agent-desc">Evaluates investment limits (₹50K / ₹1L)</p>
+        </div>
+        <div class="agent-node">
+          <div class="agent-icon">🛒</div>
+          <p class="agent-name">Execution Agent</p>
+          <p class="agent-desc">Places the purchase when conditions are met</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:20px;">Each agent is a specialist. The Agentic AI core coordinates them — the monitoring agent's signal triggers the financial advisor's check, which then unlocks the execution agent's action. No human is needed in the loop for routine execution.</p>
+  </section>
+
+  <!-- SECTION 10: Frameworks -->
+  <section>
+    <p class="section-label">Ecosystem</p>
+    <h2>Agentic AI Frameworks</h2>
+    <p>Building multi-agent systems requires orchestration frameworks — tools that let you define agents, assign them roles, wire them to tools, and coordinate their interactions. The video highlights four major ones:</p>
+
+    <div class="frameworks-grid">
+      <div class="framework-card">
+        <div class="fw-icon">🔷</div>
+        <p class="fw-name">Microsoft AutoGen</p>
+        <p class="fw-desc">Multi-agent conversation framework from Microsoft Research. Great for enterprise workflows.</p>
+      </div>
+      <div class="framework-card">
+        <div class="fw-icon">🚢</div>
+        <p class="fw-name">CrewAI</p>
+        <p class="fw-desc">Role-based agent crews. Agents get personas and collaborate like a team toward a shared goal.</p>
+      </div>
+      <div class="framework-card">
+        <div class="fw-icon">⚡</div>
+        <p class="fw-name">Agno</p>
+        <p class="fw-desc">Fast, lightweight agent framework emphasizing simplicity for production-ready builds.</p>
+      </div>
+      <div class="framework-card">
+        <div class="fw-icon">🕸️</div>
+        <p class="fw-name">LangGraph</p>
+        <p class="fw-desc">Graph-based orchestration by LangChain. Models agent behavior as nodes and edges for complex flows.</p>
+      </div>
+    </div>
+
+    <div class="llm-box" style="margin-top:28px;">
+      <p class="section-label" style="margin-bottom:12px;">Also mentioned: tools to build &amp; deploy agents</p>
+      <div class="build-tools">
+        <span class="build-badge">🔗 n8n — no/low-code automation</span>
+        <span class="build-badge">💻 OpenAI Codex — code-driven agent building</span>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:24px;">
+      <p class="insight-head">Where this is all headed</p>
+      <p>The progression is clear: from AI that answers questions (GenAI) → to AI that does tasks (AI Agents) → to AI that pursues goals across coordinated systems (Agentic AI). We're moving from tools we use to systems that work <em>for</em> us — and the frameworks above are the building blocks making that possible right now.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Notes based on "Generative AI vs Agentic AI vs AI Agents" · Produced by Apna College
+</footer>
+
+</body>
+</html>
