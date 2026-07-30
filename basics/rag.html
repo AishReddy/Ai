@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is RAG? — Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: #252a3a;
+    --accent: #5b7fff;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --dim: #94a3b8;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 24px 60px;
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--dim);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* FLOW DIAGRAM */
+  .flow-section {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 32px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .flow-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .flow-node.highlight {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 1.4rem;
+    padding: 0 4px;
+  }
+
+  .flow-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 6px;
+  }
+
+  /* MAIN CONTENT */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  /* COMPARISON CARDS */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .compare-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .compare-card.rag {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #151820, #15182a);
+  }
+
+  .compare-card h3 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    color: var(--muted);
+  }
+
+  .compare-card.rag h3 { color: var(--accent); }
+
+  .compare-card p {
+    font-size: 0.95rem;
+    color: var(--dim);
+    margin-bottom: 14px;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .tag.good { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.07); }
+  .tag.bad { border-color: #f87171; color: #f87171; background: rgba(248,113,113,0.07); }
+
+  /* BENEFITS */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .benefit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+
+  .benefit-card:hover { border-color: var(--accent); }
+
+  .benefit-icon {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+  }
+
+  .benefit-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .benefit-card p {
+    font-size: 0.88rem;
+    color: var(--dim);
+  }
+
+  /* PIPELINE */
+  .pipeline-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .pipeline-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pipeline-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .badge-ingest { background: rgba(251,191,36,0.12); color: var(--amber); }
+  .badge-retrieval { background: rgba(91,127,255,0.12); color: var(--accent); }
+
+  .pipeline-header h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .pipeline-steps {
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    position: relative;
+  }
+
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 36px;
+    width: 2px;
+    height: calc(100% - 8px);
+    background: var(--border);
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    color: var(--accent);
+    z-index: 1;
+  }
+
+  .step-body {
+    padding: 4px 0 28px;
+  }
+
+  .step-body h5 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .step-body p {
+    font-size: 0.85rem;
+    color: var(--dim);
+  }
+
+  .step-body code {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 5px;
+    color: var(--accent2);
+  }
+
+  /* SEARCH TYPES */
+  .search-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .search-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  .search-card h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .search-card p {
+    font-size: 0.82rem;
+    color: var(--dim);
+  }
+
+  .search-icon {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+
+  /* PRIVACY CALLOUT */
+  .privacy-callout {
+    background: linear-gradient(135deg, rgba(52,211,153,0.06), rgba(91,127,255,0.06));
+    border: 1px solid rgba(52,211,153,0.25);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .privacy-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .privacy-callout h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .privacy-callout p {
+    font-size: 0.9rem;
+    color: var(--dim);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    border-top: 1px solid var(--border);
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .compare-grid, .benefits-grid, .search-grid { grid-template-columns: 1fr; }
+    .flow-diagram { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Study Notes · RAG Explained</div>
+  <h1>Retrieval-<span>Augmented</span> Generation</h1>
+  <p class="hero-sub">How LLMs get an open book — accurate, up-to-date, privacy-respecting answers from your own data.</p>
+</div>
+
+<div class="flow-section">
+  <div class="flow-diagram">
+    <div>
+      <div class="flow-node">👤 User Query</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div>
+      <div class="flow-node highlight">🧠 LLM</div>
+      <div class="flow-label">Large Language Model</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div>
+      <div class="flow-node highlight">🔍 Retrieve</div>
+      <div class="flow-label">from knowledge base</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div>
+      <div class="flow-node highlight">✨ Generate</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div>
+      <div class="flow-node">📄 Response</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- PIPELINE DIAGRAM -->
+  <div>
+    <div class="section-label">Full Pipeline — Visual</div>
+    <h2>How chunking, embedding & retrieval work</h2>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; overflow-x:auto;">
+      <svg width="100%" viewBox="0 0 680 980" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:'Space Grotesk',sans-serif; min-width:480px;">
+        <title>RAG pipeline: ingestion and retrieval</title>
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <style>
+          .dt { font-size:14px; font-weight:600; fill:var(--text); }
+          .ds { font-size:12px; font-weight:400; fill:var(--dim); }
+          .box-gray  { fill:var(--surface2); stroke:var(--border); }
+          .box-amber { fill:rgba(251,191,36,0.12); stroke:rgba(251,191,36,0.4); }
+          .box-teal  { fill:rgba(52,211,153,0.10); stroke:rgba(52,211,153,0.4); }
+          .box-blue  { fill:rgba(91,127,255,0.10); stroke:rgba(91,127,255,0.4); }
+          .box-purple{ fill:rgba(167,139,250,0.10); stroke:rgba(167,139,250,0.4); }
+          .box-coral { fill:rgba(216,90,48,0.10);  stroke:rgba(216,90,48,0.4); }
+          .box-green { fill:rgba(52,211,153,0.12); stroke:rgba(52,211,153,0.5); }
+          .arr2 { stroke:var(--muted); fill:none; }
+          .divl { stroke:var(--border); stroke-dasharray:4 4; fill:none; }
+          .lg-amber { fill:#fbbf24; }
+          .lg-teal  { fill:#34d399; }
+          .lg-blue  { fill:#5b7fff; }
+          .lg-purple{ fill:#a78bfa; }
+          .lg-coral { fill:#f97316; }
+          .lg-green { fill:#4ade80; }
+          .lg-gray  { fill:var(--muted); }
+        </style>
+
+        <!-- INGESTION HEADER -->
+        <rect x="20" y="18" width="200" height="28" rx="6" class="box-amber" stroke-width="0.5"/>
+        <text class="dt" x="120" y="32" text-anchor="middle" dominant-baseline="central" style="fill:#fbbf24">Ingestion pipeline</text>
+        <text class="ds" x="340" y="32" text-anchor="middle" dominant-baseline="central">(run once, offline)</text>
+
+        <!-- SOURCE DOC -->
+        <rect x="20" y="58" width="96" height="56" rx="8" class="box-gray" stroke-width="0.5"/>
+        <text class="dt" x="68" y="80" text-anchor="middle" dominant-baseline="central">PDF / Doc</text>
+        <text class="ds" x="68" y="98" text-anchor="middle" dominant-baseline="central">source data</text>
+        <line x1="116" y1="86" x2="148" y2="86" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- EXTRACT -->
+        <rect x="150" y="58" width="90" height="56" rx="8" class="box-gray" stroke-width="0.5"/>
+        <text class="dt" x="195" y="80" text-anchor="middle" dominant-baseline="central">Extract</text>
+        <text class="ds" x="195" y="98" text-anchor="middle" dominant-baseline="central">raw text</text>
+        <line x1="240" y1="86" x2="272" y2="86" fill="none" stroke="var(--muted)" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- CHUNKS -->
+        <rect x="274" y="50" width="76" height="28" rx="6" class="box-purple" stroke-width="0.5"/>
+        <text class="ds" x="312" y="64" text-anchor="middle" dominant-baseline="central" style="fill:#a78bfa">chunk 1</text>
+        <rect x="274" y="82" width="76" height="28" rx="6" class="box-purple" stroke-width="0.5"/>
+        <text class="ds" x="312" y="96" text-anchor="middle" dominant-baseline="central" style="fill:#a78bfa">chunk 2</text>
+        <rect x="274" y="114" width="76" height="28" rx="6" class="box-purple" stroke-width="0.5"/>
+        <text class="ds" x="312" y="128" text-anchor="middle" dominant-baseline="central" style="fill:#a78bfa">chunk 3</text>
+        <text class="ds" x="312" y="152" text-anchor="middle">split into chunks</text>
+
+        <!-- chunk → embedding arrows -->
+        <line x1="350" y1="64" x2="390" y2="86" fill="none" stroke="#a78bfa" stroke-width="0.5" marker-end="url(#arr2)"/>
+        <line x1="350" y1="96" x2="390" y2="96" fill="none" stroke="#a78bfa" stroke-width="0.5" marker-end="url(#arr2)"/>
+        <line x1="350" y1="128" x2="390" y2="106" fill="none" stroke="#a78bfa" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <!-- EMBEDDING API -->
+        <rect x="392" y="62" width="100" height="56" rx="8" class="box-teal" stroke-width="0.5"/>
+        <text class="dt" x="442" y="82" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">Embedding</text>
+        <text class="ds" x="442" y="100" text-anchor="middle" dominant-baseline="central">API / model</text>
+        <line x1="492" y1="90" x2="524" y2="90" fill="none" stroke="#34d399" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- VECTORS -->
+        <rect x="526" y="50" width="80" height="26" rx="6" class="box-teal" stroke-width="0.5"/>
+        <text class="ds" x="566" y="63" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">[0.2, 0.8…]</text>
+        <rect x="526" y="80" width="80" height="26" rx="6" class="box-teal" stroke-width="0.5"/>
+        <text class="ds" x="566" y="93" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">[0.5, 0.1…]</text>
+        <rect x="526" y="110" width="80" height="26" rx="6" class="box-teal" stroke-width="0.5"/>
+        <text class="ds" x="566" y="123" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">[0.9, 0.3…]</text>
+        <text class="ds" x="566" y="148" text-anchor="middle">vectors (numbers)</text>
+        <line x1="566" y1="140" x2="566" y2="175" fill="none" stroke="#34d399" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- VECTOR DB -->
+        <rect x="490" y="177" width="152" height="54" rx="10" class="box-teal" stroke-width="0.5"/>
+        <text class="dt" x="566" y="197" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">Vector DB</text>
+        <text class="ds" x="566" y="217" text-anchor="middle" dominant-baseline="central">ChromaDB · Pinecone · FAISS</text>
+        <text class="ds" x="566" y="248" text-anchor="middle">stores embeddings + doc chunks</text>
+
+        <!-- DIVIDER 1 -->
+        <line x1="20" y1="270" x2="660" y2="270" class="divl" stroke-width="0.5"/>
+
+        <!-- RETRIEVAL HEADER -->
+        <rect x="20" y="282" width="220" height="28" rx="6" class="box-blue" stroke-width="0.5"/>
+        <text class="dt" x="130" y="296" text-anchor="middle" dominant-baseline="central" style="fill:#5b7fff">Retrieval pipeline</text>
+        <text class="ds" x="380" y="296" text-anchor="middle" dominant-baseline="central">(runs at query time)</text>
+
+        <!-- EXAMPLE BANNER -->
+        <rect x="20" y="330" width="640" height="22" rx="5" class="box-amber" stroke-width="0.5"/>
+        <text class="ds" x="340" y="341" text-anchor="middle" dominant-baseline="central" style="fill:#fbbf24">Example: "Why is my IndiGo flight delayed?"</text>
+
+        <!-- USER -->
+        <rect x="20" y="368" width="80" height="52" rx="8" class="box-gray" stroke-width="0.5"/>
+        <text class="dt" x="60" y="386" text-anchor="middle" dominant-baseline="central">User</text>
+        <text class="ds" x="60" y="404" text-anchor="middle" dominant-baseline="central">query</text>
+        <line x1="100" y1="394" x2="132" y2="394" fill="none" stroke="#5b7fff" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- EMBED QUERY -->
+        <rect x="134" y="368" width="100" height="52" rx="8" class="box-teal" stroke-width="0.5"/>
+        <text class="dt" x="184" y="386" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">Embed</text>
+        <text class="ds" x="184" y="404" text-anchor="middle" dominant-baseline="central">query → vector</text>
+        <line x1="234" y1="394" x2="266" y2="394" fill="none" stroke="#34d399" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- SEMANTIC SEARCH -->
+        <rect x="268" y="368" width="110" height="52" rx="8" class="box-blue" stroke-width="0.5"/>
+        <text class="dt" x="323" y="386" text-anchor="middle" dominant-baseline="central" style="fill:#5b7fff">Semantic</text>
+        <text class="ds" x="323" y="404" text-anchor="middle" dominant-baseline="central">search vector DB</text>
+        <line x1="378" y1="394" x2="410" y2="394" fill="none" stroke="#5b7fff" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- RANKED RESULTS -->
+        <rect x="412" y="356" width="108" height="26" rx="6" class="box-purple" stroke-width="0.5"/>
+        <text class="ds" x="466" y="369" text-anchor="middle" dominant-baseline="central" style="fill:#a78bfa">chunk 2 ▌▌▌▌▌</text>
+        <rect x="412" y="386" width="108" height="26" rx="6" class="box-purple" stroke-width="0.5"/>
+        <text class="ds" x="466" y="399" text-anchor="middle" dominant-baseline="central" style="fill:#a78bfa">chunk 1 ▌▌▌▌░</text>
+        <rect x="412" y="416" width="108" height="26" rx="6" class="box-gray" stroke-width="0.5"/>
+        <text class="ds" x="466" y="429" text-anchor="middle" dominant-baseline="central">chunk 3 ▌▌░░░</text>
+        <text class="ds" x="466" y="454" text-anchor="middle">top-K ranked chunks</text>
+
+        <!-- chunks → LLM -->
+        <line x1="520" y1="380" x2="553" y2="420" fill="none" stroke="#a78bfa" stroke-width="0.5" marker-end="url(#arr2)"/>
+        <line x1="520" y1="399" x2="553" y2="425" fill="none" stroke="#a78bfa" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <!-- LLM -->
+        <rect x="555" y="406" width="95" height="54" rx="10" class="box-coral" stroke-width="0.5"/>
+        <text class="dt" x="602" y="425" text-anchor="middle" dominant-baseline="central" style="fill:#f97316">LLM</text>
+        <text class="ds" x="602" y="443" text-anchor="middle" dominant-baseline="central">generate answer</text>
+        <line x1="602" y1="460" x2="602" y2="492" fill="none" stroke="#f97316" stroke-width="1" marker-end="url(#arr2)"/>
+
+        <!-- ANSWER -->
+        <rect x="410" y="494" width="244" height="64" rx="10" class="box-green" stroke-width="0.5"/>
+        <text class="dt" x="532" y="514" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">Answer</text>
+        <text class="ds" x="532" y="534" text-anchor="middle" dominant-baseline="central">"Dear Shradha, due to operational</text>
+        <text class="ds" x="532" y="550" text-anchor="middle" dominant-baseline="central">reasons, your flight is delayed…"</text>
+
+        <!-- DIVIDER 2 -->
+        <line x1="20" y1="578" x2="660" y2="578" class="divl" stroke-width="0.5"/>
+
+        <!-- CHUNKING STRATEGIES -->
+        <text class="dt" x="340" y="604" text-anchor="middle" dominant-baseline="central">Chunking strategies</text>
+        <rect x="20" y="622" width="190" height="54" rx="8" class="box-gray" stroke-width="0.5"/>
+        <text class="dt" x="115" y="641" text-anchor="middle" dominant-baseline="central">Fixed-size</text>
+        <text class="ds" x="115" y="659" text-anchor="middle" dominant-baseline="central">equal token blocks + overlap</text>
+        <rect x="230" y="622" width="210" height="54" rx="8" class="box-purple" stroke-width="0.5"/>
+        <text class="dt" x="335" y="641" text-anchor="middle" dominant-baseline="central" style="fill:#a78bfa">Hierarchical</text>
+        <text class="ds" x="335" y="659" text-anchor="middle" dominant-baseline="central">parent chunk → child chunks</text>
+        <rect x="460" y="622" width="200" height="54" rx="8" class="box-teal" stroke-width="0.5"/>
+        <text class="dt" x="560" y="641" text-anchor="middle" dominant-baseline="central" style="fill:#34d399">Semantic</text>
+        <text class="ds" x="560" y="659" text-anchor="middle" dominant-baseline="central">group by meaning, split on topic shift</text>
+
+        <!-- DIVIDER 3 -->
+        <line x1="20" y1="694" x2="660" y2="694" class="divl" stroke-width="0.5"/>
+
+        <!-- SEARCH TYPES -->
+        <text class="dt" x="340" y="718" text-anchor="middle" dominant-baseline="central">Search types (inside retrieval)</text>
+        <rect x="20" y="736" width="186" height="54" rx="8" class="box-gray" stroke-width="0.5"/>
+        <text class="dt" x="113" y="755" text-anchor="middle" dominant-baseline="central">Keyword search</text>
+        <text class="ds" x="113" y="773" text-anchor="middle" dominant-baseline="central">exact words · like MySQL LIKE</text>
+        <rect x="226" y="736" width="210" height="54" rx="8" class="box-blue" stroke-width="0.5"/>
+        <text class="dt" x="331" y="755" text-anchor="middle" dominant-baseline="central" style="fill:#5b7fff">Semantic search</text>
+        <text class="ds" x="331" y="773" text-anchor="middle" dominant-baseline="central">meaning via embeddings · no exact match needed</text>
+        <rect x="456" y="736" width="204" height="54" rx="8" class="box-purple" stroke-width="0.5"/>
+        <text class="dt" x="558" y="755" text-anchor="middle" dominant-baseline="central" style="fill:#a78bfa">Hierarchical search</text>
+        <text class="ds" x="558" y="773" text-anchor="middle" dominant-baseline="central">sentence-level · splits on new topic</text>
+
+        <!-- LEGEND -->
+        <rect x="20" y="812" width="640" height="42" rx="8" fill="none" stroke="var(--border)" stroke-width="0.5"/>
+        <rect x="36" y="827" width="10" height="10" rx="2" class="lg-teal"/>
+        <text class="ds" x="52" y="832" dominant-baseline="central">Embedding</text>
+        <rect x="142" y="827" width="10" height="10" rx="2" class="lg-purple"/>
+        <text class="ds" x="158" y="832" dominant-baseline="central">Chunks</text>
+        <rect x="230" y="827" width="10" height="10" rx="2" class="lg-blue"/>
+        <text class="ds" x="246" y="832" dominant-baseline="central">Retrieval</text>
+        <rect x="326" y="827" width="10" height="10" rx="2" class="lg-amber"/>
+        <text class="ds" x="342" y="832" dominant-baseline="central">Example query</text>
+        <rect x="444" y="827" width="10" height="10" rx="2" class="lg-coral"/>
+        <text class="ds" x="460" y="832" dominant-baseline="central">LLM</text>
+        <rect x="502" y="827" width="10" height="10" rx="2" class="lg-green"/>
+        <text class="ds" x="518" y="832" dominant-baseline="central">Answer</text>
+
+        <!-- bottom padding line -->
+        <line x1="0" y1="870" x2="0" y2="870" stroke="none"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div>
+    <div class="section-label">The Problem RAG Solves</div>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h3>Standard LLM (Student 1)</h3>
+        <p>Memorizes everything during training. Answers from what it learned — like a closed-book exam.</p>
+        <div class="tag-row">
+          <span class="tag bad">can hallucinate</span>
+          <span class="tag bad">goes stale</span>
+          <span class="tag bad">no private data</span>
+        </div>
+      </div>
+      <div class="compare-card rag">
+        <h3>RAG (Student 2)</h3>
+        <p>Takes an open-book exam — fetches relevant info in real time, verifies facts, stays current.</p>
+        <div class="tag-row">
+          <span class="tag good">accurate</span>
+          <span class="tag good">up to date</span>
+          <span class="tag good">context aware</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div>
+    <div class="section-label">Benefits of RAG</div>
+    <h2>Why use RAG?</h2>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">🧠</div>
+        <h4>Reduce Hallucination</h4>
+        <p>Answers are grounded in retrieved documents, not fabricated from model weights.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📡</div>
+        <h4>Keep Knowledge Up-to-date</h4>
+        <p>Update the knowledge base without retraining the model — just refresh your documents.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💰</div>
+        <h4>Cost Effective</h4>
+        <p>No expensive fine-tuning. Add or change domain knowledge by editing the vector store.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🔒</div>
+        <h4>Maintain Data Privacy</h4>
+        <p>Only the chunks relevant to a query are passed to the LLM — your full dataset stays private.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVACY CALLOUT -->
+  <div class="privacy-callout">
+    <div class="privacy-icon">🛡️</div>
+    <div>
+      <h4>Privacy: Access Only What's Needed</h4>
+      <p>RAG enforces a kind of least-privilege for AI. The model only ever sees the specific document chunks retrieved for a query — not your entire database. A customer asking about their delayed flight sees only their booking data, not everyone else's.</p>
+    </div>
+  </div>
+
+  <!-- INGESTION PIPELINE -->
+  <div>
+    <div class="section-label">The RAG Pipeline — Part 1</div>
+    <h2>Ingestion Pipeline</h2>
+    <div class="pipeline-block">
+      <div class="pipeline-header">
+        <span class="pipeline-badge badge-ingest">Offline / One-time</span>
+        <h3>Building the Knowledge Base</h3>
+      </div>
+      <div class="pipeline-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h5>Extract Data</h5>
+            <p>Load documents — PDFs, text files, web pages — and extract raw text.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h5>Split into Chunks</h5>
+            <p>Break text into smaller, compressed pieces (Chunk 1, Chunk 2 …). Chunk size is a tuning parameter.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h5>Embed → Convert to Numbers</h5>
+            <p>Each chunk goes through an <code>Embedding API</code> → becomes a vector (array of numbers that encodes meaning).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h5>Store in Vector DB (Knowledge Base)</h5>
+            <p>Embeddings + original doc chunks stored in a semantic index. Tools: <code>ChromaDB</code>, <code>Pinecone</code>, <code>FAISS</code>, <code>Azure AI Search</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETRIEVAL PIPELINE -->
+  <div>
+    <div class="section-label">The RAG Pipeline — Part 2</div>
+    <h2>Retrieval Pipeline</h2>
+    <div class="pipeline-block">
+      <div class="pipeline-header">
+        <span class="pipeline-badge badge-retrieval">At Query Time</span>
+        <h3>Finding & Using Relevant Chunks</h3>
+      </div>
+      <div class="pipeline-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h5>Embed the User Query</h5>
+            <p>The user's question is converted to a vector using the same embedding model.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h5>Search the Knowledge Base</h5>
+            <p>Compare query vector against stored embeddings to find the most relevant chunks.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h5>Inject Context + Generate</h5>
+            <p>Top chunks are added to the LLM prompt as context. The LLM generates a grounded answer.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH TYPES -->
+  <div>
+    <div class="section-label">Search Strategies</div>
+    <h2>How retrieval works</h2>
+    <div class="search-grid">
+      <div class="search-card">
+        <div class="search-icon">🔑</div>
+        <h5>Keyword Search</h5>
+        <p>Matches exact words. Like SQL <code>LIKE</code> or MySQL full-text search. Fast but misses synonyms and intent.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🔮</div>
+        <h5>Semantic Search</h5>
+        <p>Compares meaning via embeddings. Finds relevant chunks even with no keyword overlap. Understands context.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🌿</div>
+        <h5>Hierarchical Search</h5>
+        <p>Sentence-level within a topic, switching when a new topic emerges. Respects document structure and boundaries.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE -->
+  <div>
+    <div class="section-label">Real World Example</div>
+    <h2>IndiGo RAG Customer Support</h2>
+    <div class="pipeline-block">
+      <div class="pipeline-steps">
+        <div class="step">
+          <div class="step-num">Q</div>
+          <div class="step-body">
+            <h5>User asks: "Why is my flight delayed?"</h5>
+            <p>Query is embedded and used to retrieve only <em>that user's</em> booking data from the knowledge base.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">A</div>
+          <div class="step-body">
+            <h5>Personalised, real-time answer</h5>
+            <p>"Dear Shradha, due to operational reasons affecting your arriving aircraft, your flight is delayed. Revised departure is 3:30 hrs…" — grounded in live data, not hallucinated.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- CHUNKING STRATEGIES -->
+  <div>
+    <div class="section-label">Tech Implementation Pillars</div>
+    <h2>Chunking Strategies</h2>
+    <div class="search-grid">
+      <div class="search-card">
+        <div class="search-icon">📦</div>
+        <h5>1. Fixed-size Chunking</h5>
+        <p>Splits text into equal-sized blocks (e.g. 256 or 512 tokens) with optional overlap between chunks to avoid cutting off context.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🌿</div>
+        <h5>2. Hierarchical Chunking</h5>
+        <p>Creates parent and child chunks. Small child chunks are retrieved for precision; large parent chunks are returned for full context.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🧠</div>
+        <h5>3. Semantic Chunking</h5>
+        <p>Groups sentences by semantic similarity. A new chunk starts when the topic shifts — respects meaning, not just character count.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMBEDDING MODELS -->
+  <div>
+    <div class="section-label">Tech Implementation Pillars</div>
+    <h2>Embedding Models</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h3>Cloud APIs</h3>
+        <p>Managed, high-quality, easy to integrate. Best for production.</p>
+        <div class="tag-row">
+          <span class="tag">OpenAI text-embedding-3-large</span>
+          <span class="tag">Gemini embeddings</span>
+        </div>
+      </div>
+      <div class="compare-card rag">
+        <h3>Open Source (HuggingFace)</h3>
+        <p>Run locally, free, privacy-preserving. Great for sensitive data.</p>
+        <div class="tag-row">
+          <span class="tag good">all-MiniLM-L6-v2</span>
+          <span class="tag good">Sentence Transformers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VECTOR DATABASES -->
+  <div>
+    <div class="section-label">Tech Implementation Pillars</div>
+    <h2>Vector Databases</h2>
+    <p style="color:var(--dim); margin-bottom:20px; font-size:0.95rem;">Store embeddings + doc chunks. Enable fast similarity search (Top-K retrieval). Also pair with traditional DBs like MongoDB or MySQL for metadata filtering.</p>
+    <div class="search-grid">
+      <div class="search-card">
+        <div class="search-icon">🟠</div>
+        <h5>ChromaDB</h5>
+        <p>Lightweight, local-first. Great for prototyping and small projects.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">⚡</div>
+        <h5>FAISS</h5>
+        <p>Facebook's library. Blazing fast in-memory vector search. No persistence out of the box.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🌲</div>
+        <h5>Pinecone</h5>
+        <p>Fully managed cloud vector DB. Production-ready with filtering and namespacing.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🔍</div>
+        <h5>Elastic</h5>
+        <p>Combines keyword + vector search. Good for hybrid RAG in enterprise environments.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">☁️</div>
+        <h5>Azure AI Search</h5>
+        <p>Microsoft's managed solution. Integrates with Azure OpenAI for end-to-end RAG.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🗄️</div>
+        <h5>MongoDB / MySQL</h5>
+        <p>Used alongside vector DBs for structured metadata — filter by date, user, category before semantic search.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAG FRAMEWORKS -->
+  <div>
+    <div class="section-label">Tech Implementation Pillars</div>
+    <h2>RAG Frameworks</h2>
+    <p style="color:var(--dim); margin-bottom:20px; font-size:0.95rem;">These orchestrate the full pipeline — ingestion, embedding, retrieval, and generation — so you don't build from scratch.</p>
+    <div class="search-grid">
+      <div class="search-card">
+        <div class="search-icon">🔗</div>
+        <h5>LangChain</h5>
+        <p>Most popular. Composable chains and agents. Huge ecosystem of integrations for LLMs, vector stores, tools.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🦙</div>
+        <h5>LlamaIndex</h5>
+        <p>Optimised specifically for RAG. Excellent data connectors, query engines, and index types out of the box.</p>
+      </div>
+      <div class="search-card">
+        <div class="search-icon">🌾</div>
+        <h5>Haystack (by deepset)</h5>
+        <p>Production-focused pipeline framework. Strong NLP roots, great for enterprise document search.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAG ARCHITECTURES -->
+  <div>
+    <div class="section-label">RAG Architecture & Use Cases</div>
+    <h2>Types of RAG Architecture</h2>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+        <thead>
+          <tr style="background:var(--surface2); border-bottom:1px solid var(--border);">
+            <th style="padding:16px 20px; text-align:left; font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; color:var(--muted); font-weight:600;">Architecture</th>
+            <th style="padding:16px 20px; text-align:left; font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; color:var(--muted); font-weight:600;">Retrieval Type</th>
+            <th style="padding:16px 20px; text-align:left; font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; color:var(--muted); font-weight:600;">Use Cases</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:16px 20px; font-weight:600;">Naive / Standard RAG</td>
+            <td style="padding:16px 20px; color:var(--dim);">Vector only</td>
+            <td style="padding:16px 20px; color:var(--dim);">FAQs, Chatbots</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:16px 20px; font-weight:600;">Hybrid RAG</td>
+            <td style="padding:16px 20px; color:var(--dim);">Vector + Keyword</td>
+            <td style="padding:16px 20px; color:var(--dim);">Enterprise Search, E-commerce</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:16px 20px; font-weight:600;">RAG with Memory</td>
+            <td style="padding:16px 20px; color:var(--dim);">Contextual Memory</td>
+            <td style="padding:16px 20px; color:var(--dim);">Support assistant / Chatbots</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:16px 20px; font-weight:600;">Graph RAG</td>
+            <td style="padding:16px 20px; color:var(--dim);">Graph-based</td>
+            <td style="padding:16px 20px; color:var(--dim);">Legal / R&amp;D / Knowledge-heavy systems</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:16px 20px; font-weight:600;">Agentic RAG</td>
+            <td style="padding:16px 20px; color:var(--dim);">Multi-step + Tools</td>
+            <td style="padding:16px 20px; color:var(--dim);">Investigations, complex multi-hop queries</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:16px 20px; font-weight:600;">Multimodal RAG</td>
+            <td style="padding:16px 20px; color:var(--dim);">Text, Image, Video, Audio</td>
+            <td style="padding:16px 20px; color:var(--dim);">Visual Q&amp;A (medical, security)</td>
+          </tr>
+          <tr>
+            <td style="padding:16px 20px; font-weight:600;">Self-RAG</td>
+            <td style="padding:16px 20px; color:var(--dim);">Reflective</td>
+            <td style="padding:16px 20px; color:var(--dim);">Regulated domains</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Architecture callout cards -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+      <div class="benefit-card">
+        <div class="benefit-icon">🔁</div>
+        <h4>RAG with Memory</h4>
+        <p>Standard RAG is stateless — it forgets past conversations. Adding a memory layer stores conversation history so the LLM can reference earlier turns and give coherent multi-turn answers.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🕸️</div>
+        <h4>Graph RAG — neo4j</h4>
+        <p>Data is stored as a knowledge graph. <strong>Entities</strong> become nodes; <strong>Relations</strong> become edges. Runs graph-based + vector-based retrieval in parallel. Best for legal, R&amp;D, and org-wide knowledge systems where who-knows-who matters.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🤖</div>
+        <h4>Agentic RAG</h4>
+        <p>Agents decompose a complex query into sub-questions, run multiple RAG retrievals, and synthesise a final answer. Flow: Query → Agents → RAG ↔ Agents → Response. Used for investigations and multi-hop reasoning (e.g. "explain the Gold price hike in 2025 and compare with other metals" splits into: when? why? other metals at that time?).</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🪞</div>
+        <h4>Self-RAG</h4>
+        <p>Adds a reflection mechanism. On receiving a query, the model decides: <em>does this need retrieval?</em> If yes → Document Retrieval → Contextual Generation. If no → Direct Generation. Both paths merge into a Final Response. Used in regulated domains where answer quality must be verified.</p>
+      </div>
+      <div class="benefit-card" style="grid-column: 1 / -1;">
+        <div class="benefit-icon">🖼️</div>
+        <h4>Multimodal RAG</h4>
+        <p>Real-world data isn't just text — it includes images, video, audio, and documents. Multimodal RAG handles all formats, enabling use cases like medical image Q&A, security footage analysis, and audio transcript retrieval.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUGMENTATION STEP CALLOUT -->
+  <div class="privacy-callout" style="border-color:rgba(167,139,250,0.3); background:linear-gradient(135deg,rgba(167,139,250,0.06),rgba(91,127,255,0.06));">
+    <div class="privacy-icon">🔄</div>
+    <div>
+      <h4 style="color:var(--accent2);">The Augmentation Step</h4>
+      <p>After retrieval, the Top-K ranked results become the context injected into the LLM's prompt. "K" is a tunable parameter — more results = richer context but higher token cost. The LLM then generates its final answer grounded in only that retrieved context.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  RAG = Retrieval-Augmented Generation · Notes from "What is RAG? Completely Explained in 15 Minutes"
+</footer>
+
+</body>
+</html>
